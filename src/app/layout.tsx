@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Source_Sans_3 } from "next/font/google";
+import Script from "next/script";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { PwaRegister } from "@/components/layout/pwa-register";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 import "./globals.css";
+
+const GA_MEASUREMENT_ID = "G-KRZW7437DW";
 
 const display = Outfit({
   variable: "--font-display",
@@ -83,6 +86,18 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${sans.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <ThemeProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
