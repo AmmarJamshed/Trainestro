@@ -77,6 +77,7 @@ export interface ScrapeLog {
 export interface SearchFilters {
   q?: string;
   provider?: string;
+  country?: string;
   city?: string;
   province?: string;
   category?: string;
@@ -93,6 +94,7 @@ export interface AnalyticsSummary {
   providers: number;
   cities: { name: string; count: number }[];
   categories: { name: string; count: number }[];
+  countries: { code: string; name: string; count: number }[];
   recentlyAdded: Training[];
 }
 
@@ -119,4 +121,6 @@ export interface ScrapedTraining {
   registration_url: string;
   image_url?: string | null;
   contact_info?: string | null;
+  /** ISO country code for the event location (may differ from provider.country_code). */
+  country_code?: string | null;
 }

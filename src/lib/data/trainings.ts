@@ -9,6 +9,7 @@ import {
 } from "date-fns";
 import { readFile } from "fs/promises";
 import path from "path";
+import { SUPPORTED_COUNTRIES } from "@/lib/constants";
 import { SEED_PROVIDERS, SEED_TRAININGS } from "@/lib/data/seed";
 import type {
   AnalyticsSummary,
@@ -57,6 +58,12 @@ function filterTrainings(trainings: Training[], filters: SearchFilters): Trainin
         t.provider?.slug === filters.provider ||
         t.provider_id === filters.provider ||
         t.provider?.name.toLowerCase() === providerFilter
+    );
+  }
+
+  if (filters.country) {
+    results = results.filter(
+      (t) => t.country_code?.toUpperCase() === filters.country!.toUpperCase()
     );
   }
 
@@ -239,10 +246,29 @@ export async function getTrainingBySlug(slug: string): Promise<Training | null> 
   }
 }
 
+export async function getCountryDensity(): Promise<
+  { code: string; name: string; count: number }[]
+> {
+  const trainings = await getTrainings();
+  const counts = new Map<string, number>();
+  for (const t of trainings) {
+    const code = (t.country_code || "").toUpperCase();
+    if (!code) continue;
+    counts.set(code, (counts.get(code) ?? 0) + 1);
+  }
+
+  return SUPPORTED_COUNTRIES.map((c) => ({
+    code: c.code,
+    name: c.label,
+    count: counts.get(c.code) ?? 0,
+  }));
+}
+
 export async function getAnalytics(): Promise<AnalyticsSummary> {
-  const [trainings, providers] = await Promise.all([
+  const [trainings, providers, countries] = await Promise.all([
     getTrainings({ sort: "latest" }),
     getProviders(),
+    getCountryDensity(),
   ]);
 
   const cityCounts = new Map<string, number>();
@@ -265,6 +291,7 @@ export async function getAnalytics(): Promise<AnalyticsSummary> {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 8),
+    countries,
     recentlyAdded: trainings.slice(0, 8),
   };
 }

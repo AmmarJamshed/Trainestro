@@ -40,3 +40,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+
+# scraped runtime data
+/data/raw-*.html
+/data/*.pdf
+/data/sql-batches/
+/data/upsert_trainings.sql
+/data/scrape-logs.json
+/data/probe-*/
+/data/local-ids.json
+/data/remote-ids.json
+/data/missing-trainings.json
+/data/providers.json
+/data/trainings.json

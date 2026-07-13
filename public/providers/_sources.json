@@ -1,0 +1,40 @@
+{
+  "nibaf": {
+    "file": "/providers/nibaf.jpg",
+    "source": "https://nibaf.sbp.org.pk/img/nibaf-logo-JPG-S.jpg"
+  },
+  "lrc": {
+    "file": "/providers/lrc.png",
+    "source": "https://learningresourcecentre.com/wp-content/uploads/2022/04/LRC-Logo-1.png"
+  },
+  "atomcamp": {
+    "file": "/providers/atomcamp.png",
+    "source": "https://www.atomcamp.com/wp-content/uploads/2022/08/atomcamp-logo-300x64.png"
+  },
+  "aidatayard": {
+    "file": "/providers/aidatayard.png",
+    "source": "https://aidatayard.com/wp-content/uploads/2025/01/Logo-Side.png"
+  },
+  "pixelart": {
+    "file": "/providers/pixelart.png",
+    "source": "https://pixelartga.com/wp-content/uploads/2025/02/cropped-bluegreen-logo.png"
+  },
+  "iba-cee": {
+    "file": "/providers/iba-cee.png",
+    "source": "https://www.iba.edu.pk/images/logo.png",
+    "note": "Cropped official IBA Karachi mark"
+  },
+  "iba-cict": {
+    "file": "/providers/iba-cict.png",
+    "source": "https://cict.iba.edu.pk/wp-content/uploads/2025/06/cropped-CICT-Primary-Logo-scaled-1-768x256.png"
+  },
+  "lums": {
+    "file": "/providers/lums.png",
+    "source": "https://www.lums.edu.pk/sites/default/files/inline-images/LUMS%20Logo.png"
+  },
+  "nust": {
+    "file": "/providers/nust.png",
+    "source": "https://www.google.com/s2/favicons?domain=nust.edu.pk&sz=256",
+    "note": "NUST site blocks direct scrapes (403); using official-domain favicon mirror"
+  }
+}

@@ -1,5 +1,7 @@
 name: Weekly scrape
 
+# Every Monday 03:00 UTC — scrape providers and upsert new/updated trainings
+# across Pakistan, UAE, USA, and UK (GDG multi-country chapter scans).
 on:
   schedule:
     - cron: "0 3 * * 1"
@@ -8,6 +10,7 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: write
     steps:
@@ -23,13 +26,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify required secrets
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY repository secrets so scrapers can write new trainings."
+            exit 1
+          fi
+
       - name: Run provider scrapers
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run scrape
-        continue-on-error: false
 
       - name: Commit updated data files
         run: |

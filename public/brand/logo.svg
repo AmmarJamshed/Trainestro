@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-label="Trainestro">
+  <rect width="128" height="128" rx="28" fill="#0056D2"/>
+  <path fill="#FFFFFF" d="M20 30c0-2.2 1.8-4 4-4h30c1.6 0 3.1.9 3.8 2.4L72 54H36c-8.8 0-16-7.2-16-16V30z"/>
+  <path fill="#FFFFFF" d="M108 30c0-2.2-1.8-4-4-4H74c-1.6 0-3.1.9-3.8 2.4L56 54h36c8.8 0 16-7.2 16-16V30z"/>
+  <rect fill="#FFFFFF" x="58" y="48" width="12" height="44" rx="2"/>
+  <path fill="#FFFFFF" d="M64 108l-9-14h18z"/>
+  <text
+    x="152"
+    y="82"
+    font-family="Outfit, Arial, Helvetica, sans-serif"
+    font-size="56"
+    font-weight="700"
+    letter-spacing="-1.2"
+    fill="#0F1114"
+  >Trainestro</text>
+</svg>

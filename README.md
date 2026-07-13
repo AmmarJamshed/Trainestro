@@ -1,13 +1,13 @@
 # Trainestro
 
-Live professional training aggregator for Pakistan. Discover upcoming instructor-led sessions (classroom, hybrid, live online) and register on the provider's official page.
+Live professional training aggregator for **Pakistan, UAE, USA, and UK**. Discover upcoming instructor-led sessions (classroom, hybrid, live online) and register on the provider's official page.
 
 ## Stack
 
 - **Frontend:** Next.js 15, React, TypeScript, Tailwind CSS, shadcn/ui
 - **Data:** Supabase/PostgreSQL (optional) with local JSON/seed fallback
 - **Scraping:** Cheerio + Axios modules per provider (Playwright available for JS-heavy sites)
-- **Automation:** GitHub Actions weekly scrape → commit data → Vercel redeploy
+- **Automation:** GitHub Actions weekly scrape → commit data → Vercel redeploy; monthly expired cleanup
 - **Deploy:** Vercel
 
 ## Quick start
@@ -28,23 +28,29 @@ Admin panel: `/admin` (default password `trainestro-admin` — change via `ADMIN
 | --- | --- |
 | `npm run dev` | Start Next.js |
 | `npm run build` | Production build |
-| `npm run scrape` | Run all provider scrapers |
+| `npm run scrape` | Run all provider scrapers (upsert new/updated trainings) |
+| `npm run cleanup:expired` | Delete trainings whose completion date is today or earlier |
 | `npm run lint` | ESLint |
 
 ## Providers (scrapers)
 
-Initial + discovered Pakistani providers:
+Pakistan institutes, university centres, and global community/catalog programs:
 
-- NIBAF Pakistan
-- Learning Resource Centre (LRC)
-- atomcamp
-- AI DataYard
-- PixelArt Games Academy
-- IBA Center for Executive Education
-- IBA-CICT
-- NUST IEDC / PDC
+- NIBAF Pakistan, LRC, atomcamp, AI DataYard, PixelArt, IBA CEE, IBA-CICT, NUST PDC
+- **LUMS REDC** & **LUMS CES** (Lahore executive / continuing education)
+- **FAST NUCES CoEE** (professional tech programmes)
+- Google Developer Groups (live events across **PK / AE / US / GB** cities)
+- Microsoft Learn Students, IBM SkillsBuild, Oracle University
+- **Stanford Continuing Studies** (US)
+- **Flatiron School** (US cohorts)
+- **Imperial Lifelong Learning** (UK)
+- **Manchester Dubai Executive Education** (UAE)
 
 Each scraper lives under `src/lib/scrapers/providers/` and is registered in `src/lib/scrapers/registry.ts`. Failures are isolated — one provider error does not stop the rest.
+
+## Countries
+
+Supported country filters: `PK`, `AE`, `US`, `GB`. Trainings store an event-level `country_code` (GDG events use the chapter country even when the provider row is multi-region).
 
 ## Supabase
 
@@ -53,18 +59,21 @@ Each scraper lives under `src/lib/scrapers/providers/` and is registered in `src
 3. Seed providers from `supabase/seed.sql`.
 4. Set env vars from `.env.example`.
 
-`country_code` on providers/trainings is ready for expansion beyond Pakistan.
-
 ## GitHub Actions
 
-Workflow: `.github/workflows/weekly-scrape.yml`
+| Workflow | Schedule | Purpose |
+| --- | --- | --- |
+| `.github/workflows/weekly-scrape.yml` | Mondays 03:00 UTC (45 min timeout) | Scrape all providers including multi-country GDG cities |
+| `.github/workflows/monthly-cleanup.yml` | 1st of month 04:00 UTC | Delete trainings past completion (`end_date`, or `start_date` if no end) — all countries |
+
+Both support **Run workflow** manually from the Actions tab.
 
 Secrets:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `VERCEL_DEPLOY_HOOK_URL` (optional)
+- `SUPABASE_SERVICE_ROLE_KEY` (required for DB writes/deletes)
+- `VERCEL_DEPLOY_HOOK_URL` (optional redeploy after data changes)
 
 ## Vercel
 

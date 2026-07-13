@@ -12,7 +12,10 @@ const MONTHS: Record<string, number> = {
 };
 
 export function parseFlexibleDate(input: string, fallbackYear = new Date().getFullYear()): string | null {
-  const cleaned = input.replace(/\s+/g, " ").trim();
+  const cleaned = input
+    .replace(/(\d{1,2})(st|nd|rd|th)\b/gi, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
   const iso = cleaned.match(/(\d{4})-(\d{2})-(\d{2})/);
   if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
 

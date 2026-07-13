@@ -18,6 +18,21 @@ export interface RunSummary {
   error?: string;
 }
 
+function currencyForCountry(countryCode: string | null | undefined, fallback = "PKR") {
+  switch ((countryCode || "").toUpperCase()) {
+    case "AE":
+      return "AED";
+    case "US":
+      return "USD";
+    case "GB":
+      return "GBP";
+    case "PK":
+      return "PKR";
+    default:
+      return fallback;
+  }
+}
+
 function toTraining(
   provider: Provider,
   item: ScrapedTraining,
@@ -30,6 +45,7 @@ function toTraining(
     item.start_date,
     item.registration_url
   );
+  const country_code = item.country_code || provider.country_code || "PK";
   return {
     id: existing?.id ?? randomUUID(),
     provider_id: provider.id,
@@ -50,7 +66,7 @@ function toTraining(
     duration: item.duration ?? null,
     registration_deadline: item.registration_deadline ?? null,
     price: item.price ?? null,
-    currency: item.currency ?? "PKR",
+    currency: item.currency ?? currencyForCountry(country_code),
     is_free: item.is_free ?? false,
     certificate_available: item.certificate_available ?? false,
     registration_url: item.registration_url,
@@ -58,7 +74,7 @@ function toTraining(
     contact_info: item.contact_info ?? provider.contact_email,
     status: "upcoming",
     source_hash,
-    country_code: provider.country_code || "PK",
+    country_code,
     last_scraped_at: now,
     last_updated_at: now,
     created_at: existing?.created_at ?? now,
@@ -120,7 +136,22 @@ async function upsertLocal(
     }
   }
 
-  const archived = await archiveExpired(trainings);
+  // Drop stale upcoming rows for this provider that were not in the latest scrape
+  const keepHashes = new Set(
+    scraped.map((item) =>
+      makeSourceHash(provider.id, item.title, item.start_date, item.registration_url)
+    )
+  );
+  const before = trainings.length;
+  trainings = trainings.filter(
+    (t) =>
+      t.provider_id !== provider.id ||
+      t.status !== "upcoming" ||
+      keepHashes.has(t.source_hash)
+  );
+  const pruned = before - trainings.length;
+
+  const archived = (await archiveExpired(trainings)) + pruned;
   await writeFile(
     path.join(dataDir, "trainings.json"),
     JSON.stringify(trainings, null, 2),
@@ -150,6 +181,7 @@ async function upsertSupabase(
       item.start_date,
       item.registration_url
     );
+    const country_code = item.country_code || provider.country_code || "PK";
     const payload = {
       provider_id: provider.id,
       slug: makeTrainingSlug(item.title, item.start_date),
@@ -167,7 +199,7 @@ async function upsertSupabase(
       duration: item.duration ?? null,
       registration_deadline: item.registration_deadline ?? null,
       price: item.price ?? null,
-      currency: item.currency ?? "PKR",
+      currency: item.currency ?? currencyForCountry(country_code),
       is_free: item.is_free ?? false,
       certificate_available: item.certificate_available ?? false,
       registration_url: item.registration_url,
@@ -175,7 +207,7 @@ async function upsertSupabase(
       contact_info: item.contact_info ?? provider.contact_email,
       status: "upcoming" as const,
       source_hash: hash,
-      country_code: provider.country_code || "PK",
+      country_code,
       last_scraped_at: new Date().toISOString(),
       last_updated_at: new Date().toISOString(),
     };
@@ -230,6 +262,23 @@ async function upsertSupabase(
     .eq("status", "upcoming")
     .is("end_date", null)
     .lt("start_date", today);
+
+  // Remove stale upcoming rows for this provider that were not in the latest scrape
+  const keepHashes = scraped.map((item) =>
+    makeSourceHash(provider.id, item.title, item.start_date, item.registration_url)
+  );
+  const { data: existingRows } = await supabase
+    .from("trainings")
+    .select("id, source_hash")
+    .eq("provider_id", provider.id)
+    .eq("status", "upcoming");
+  const staleIds = (existingRows ?? [])
+    .filter((row) => !keepHashes.includes(row.source_hash))
+    .map((row) => row.id);
+  if (staleIds.length) {
+    const { error: delErr } = await supabase.from("trainings").delete().in("id", staleIds);
+    if (!delErr) archived += staleIds.length;
+  }
 
   return { created, updated, archived };
 }

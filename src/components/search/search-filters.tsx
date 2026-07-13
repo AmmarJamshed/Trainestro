@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useCallback, useMemo, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -11,19 +11,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MAJOR_CITIES, PAKISTAN_PROVINCES, POPULAR_CATEGORIES } from "@/lib/constants";
+import { trackUsageEvent } from "@/lib/analytics";
+import {
+  citiesForCountry,
+  PAKISTAN_PROVINCES,
+  POPULAR_CATEGORIES,
+  SUPPORTED_COUNTRIES,
+} from "@/lib/constants";
 import type { Provider } from "@/lib/types";
 
 export function SearchFilters({ providers }: { providers: Provider[] }) {
   const router = useRouter();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const selectedCountry = params.get("country") ?? "all";
+
+  const cityOptions = useMemo(() => {
+    const cities =
+      selectedCountry === "all"
+        ? [
+            ...new Set(
+              SUPPORTED_COUNTRIES.flatMap((c) => citiesForCountry(c.code))
+            ),
+          ].sort()
+        : citiesForCountry(selectedCountry);
+    return cities;
+  }, [selectedCountry]);
 
   const update = useCallback(
     (key: string, value: string) => {
       const next = new URLSearchParams(params.toString());
       if (!value || value === "all") next.delete(key);
       else next.set(key, value);
+      // Changing country resets city if it no longer applies
+      if (key === "country") {
+        const city = next.get("city");
+        if (city && city !== "Online" && value && value !== "all") {
+          const allowed = new Set(citiesForCountry(value).map((c) => c.toLowerCase()));
+          if (!allowed.has(city.toLowerCase())) next.delete("city");
+        }
+      }
+
+      const country = next.get("country");
+      const category = next.get("category");
+      const delivery = next.get("delivery");
+      const q = next.get("q");
+
+      if (key === "q") {
+        trackUsageEvent({
+          event_type: "search",
+          query_text: q,
+          country_code: country,
+          category,
+          delivery_mode: delivery,
+        });
+      } else {
+        trackUsageEvent({
+          event_type: "filter",
+          query_text: q,
+          country_code: country,
+          category,
+          delivery_mode: delivery,
+        });
+      }
+
       startTransition(() => {
         router.push(`/search?${next.toString()}`);
       });
@@ -33,7 +84,7 @@ export function SearchFilters({ providers }: { providers: Provider[] }) {
 
   return (
     <aside
-      className={`space-y-5 rounded-2xl border border-border/70 bg-muted/20 p-4 ${pending ? "opacity-70" : ""}`}
+      className={`space-y-4 rounded-2xl border border-border/70 bg-muted/20 p-3 sm:space-y-5 sm:p-4 ${pending ? "opacity-70" : ""}`}
     >
       <div>
         <Label htmlFor="q">Search</Label>
@@ -49,6 +100,19 @@ export function SearchFilters({ providers }: { providers: Provider[] }) {
           }}
         />
       </div>
+
+      <FilterSelect
+        label="Country"
+        value={selectedCountry}
+        onChange={(v) => update("country", v)}
+        options={[
+          { value: "all", label: "All countries" },
+          ...SUPPORTED_COUNTRIES.map((c) => ({
+            value: c.code,
+            label: c.label,
+          })),
+        ]}
+      />
 
       <FilterSelect
         label="Provider"
@@ -67,17 +131,24 @@ export function SearchFilters({ providers }: { providers: Provider[] }) {
         options={[
           { value: "all", label: "All cities" },
           { value: "Online", label: "Online" },
-          ...MAJOR_CITIES.map((c) => ({ value: c, label: c })),
+          ...cityOptions.map((c) => ({ value: c, label: c })),
         ]}
       />
 
       <FilterSelect
-        label="Province"
+        label="Province / region"
         value={params.get("province") ?? "all"}
         onChange={(v) => update("province", v)}
         options={[
-          { value: "all", label: "All provinces" },
+          { value: "all", label: "All regions" },
           ...PAKISTAN_PROVINCES.map((p) => ({ value: p, label: p })),
+          { value: "Dubai", label: "Dubai" },
+          { value: "Abu Dhabi", label: "Abu Dhabi" },
+          { value: "Sharjah", label: "Sharjah" },
+          { value: "England", label: "England" },
+          { value: "Scotland", label: "Scotland" },
+          { value: "Wales", label: "Wales" },
+          { value: "Northern Ireland", label: "Northern Ireland" },
         ]}
       />
 
