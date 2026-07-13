@@ -21,17 +21,6 @@ export function SiteFooter() {
           <Link href="/search" className="transition hover:text-[var(--portal)]">
             Browse trainings
           </Link>
-          <Link href="/admin" className="transition hover:text-[var(--portal)]">
-            Admin
-          </Link>
-          <a
-            href="https://github.com/AmmarJamshed/Trainestro"
-            className="transition hover:text-[var(--portal)]"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
         </div>
       </div>
     </footer>
