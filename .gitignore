@@ -55,3 +55,9 @@ next-env.d.ts
 /data/missing-trainings.json
 /data/providers.json
 /data/trainings.json
+
+# local tooling / promo intermediates
+/tools/
+/public/promo/raw/
+/public/promo/*.wav
+/public/promo/mixkit-*
