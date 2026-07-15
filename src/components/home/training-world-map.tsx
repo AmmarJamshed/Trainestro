@@ -18,6 +18,18 @@ const SHORT: Record<string, string> = {
   GB: "UK",
   AE: "UAE",
   PK: "PK",
+  SA: "SA",
+  BH: "BH",
+  QA: "QA",
+  OM: "OM",
+  DE: "DE",
+  FR: "FR",
+  CZ: "CZ",
+  NL: "NL",
+  CA: "CA",
+  JP: "JP",
+  MY: "MY",
+  SG: "SG",
 };
 
 const InteractiveGlobe = dynamic(

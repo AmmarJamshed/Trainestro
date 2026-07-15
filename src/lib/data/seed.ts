@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import { eventbriteSeedProviders } from "@/lib/scrapers/providers/eventbrite";
 import type { Provider, Training } from "@/lib/types";
 
 const now = "2026-07-11T00:00:00.000Z";
@@ -385,6 +386,7 @@ export const SEED_PROVIDERS: Provider[] = [
     created_at: now,
     updated_at: now,
   },
+  ...eventbriteSeedProviders(now),
 ];
 
 function hashSource(providerId: string, title: string, start: string, url: string) {

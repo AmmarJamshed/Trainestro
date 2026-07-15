@@ -1,0 +1,14 @@
+name: "Eventbrite: France"
+
+on:
+  schedule:
+    - cron: "40 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/trainings-eventbrite-reusable.yml
+    with:
+      scraper_key: eventbrite-fr
+      country_label: France
+    secrets: inherit

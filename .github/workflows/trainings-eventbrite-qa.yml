@@ -1,0 +1,14 @@
+name: "Eventbrite: Qatar"
+
+on:
+  schedule:
+    - cron: "40 4 * * 1"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/trainings-eventbrite-reusable.yml
+    with:
+      scraper_key: eventbrite-qa
+      country_label: Qatar
+    secrets: inherit

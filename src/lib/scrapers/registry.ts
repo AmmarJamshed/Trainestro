@@ -24,6 +24,7 @@ import {
   ManchesterDubaiScraper,
   StanfordCsScraper,
 } from "@/lib/scrapers/providers/training-centres";
+import { eventbriteScrapers } from "@/lib/scrapers/providers/eventbrite";
 
 const scrapers: ProviderScraper[] = [
   new NibafScraper(),
@@ -45,6 +46,7 @@ const scrapers: ProviderScraper[] = [
   new FlatironScraper(),
   new ImperialLllScraper(),
   new ManchesterDubaiScraper(),
+  ...eventbriteScrapers,
 ];
 
 export function getAllScrapers() {

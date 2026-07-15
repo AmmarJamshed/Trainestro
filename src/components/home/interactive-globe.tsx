@@ -10,10 +10,22 @@ import type { CountryDensity } from "@/components/home/training-world-map";
 
 /** Accurate geographic centres (approx. capital / national midpoint). */
 const GEO: Record<string, { lat: number; lng: number; short: string }> = {
-  US: { lat: 38.9072, lng: -77.0369, short: "USA" }, // Washington, D.C.
-  GB: { lat: 51.5074, lng: -0.1278, short: "UK" }, // London
-  AE: { lat: 25.2048, lng: 55.2708, short: "UAE" }, // Dubai
-  PK: { lat: 33.6844, lng: 73.0479, short: "PK" }, // Islamabad
+  US: { lat: 38.9072, lng: -77.0369, short: "USA" },
+  GB: { lat: 51.5074, lng: -0.1278, short: "UK" },
+  AE: { lat: 25.2048, lng: 55.2708, short: "UAE" },
+  PK: { lat: 33.6844, lng: 73.0479, short: "PK" },
+  SA: { lat: 24.7136, lng: 46.6753, short: "SA" },
+  BH: { lat: 26.2235, lng: 50.5876, short: "BH" },
+  QA: { lat: 25.2854, lng: 51.531, short: "QA" },
+  OM: { lat: 23.588, lng: 58.3829, short: "OM" },
+  DE: { lat: 52.52, lng: 13.405, short: "DE" },
+  FR: { lat: 48.8566, lng: 2.3522, short: "FR" },
+  CZ: { lat: 50.0755, lng: 14.4378, short: "CZ" },
+  NL: { lat: 52.3676, lng: 4.9041, short: "NL" },
+  CA: { lat: 43.6532, lng: -79.3832, short: "CA" },
+  JP: { lat: 35.6762, lng: 139.6503, short: "JP" },
+  MY: { lat: 3.139, lng: 101.6869, short: "MY" },
+  SG: { lat: 1.3521, lng: 103.8198, short: "SG" },
 };
 
 type GlobePoint = {

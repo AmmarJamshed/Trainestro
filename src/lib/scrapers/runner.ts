@@ -28,6 +28,28 @@ function currencyForCountry(countryCode: string | null | undefined, fallback = "
       return "GBP";
     case "PK":
       return "PKR";
+    case "SA":
+      return "SAR";
+    case "BH":
+      return "BHD";
+    case "QA":
+      return "QAR";
+    case "OM":
+      return "OMR";
+    case "DE":
+    case "FR":
+    case "NL":
+      return "EUR";
+    case "CZ":
+      return "CZK";
+    case "CA":
+      return "CAD";
+    case "JP":
+      return "JPY";
+    case "MY":
+      return "MYR";
+    case "SG":
+      return "SGD";
     default:
       return fallback;
   }

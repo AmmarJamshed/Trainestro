@@ -1,0 +1,14 @@
+name: "Eventbrite: Germany"
+
+on:
+  schedule:
+    - cron: "20 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/trainings-eventbrite-reusable.yml
+    with:
+      scraper_key: eventbrite-de
+      country_label: Germany
+    secrets: inherit

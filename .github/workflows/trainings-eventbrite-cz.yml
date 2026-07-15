@@ -1,0 +1,14 @@
+name: "Eventbrite: Czech Republic"
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/trainings-eventbrite-reusable.yml
+    with:
+      scraper_key: eventbrite-cz
+      country_label: Czech Republic
+    secrets: inherit

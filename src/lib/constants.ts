@@ -1,16 +1,28 @@
 export const SITE_NAME = "Trainestro";
 export const SITE_TAGLINE =
-  "Find live professional trainings in Pakistan, UAE, USA, and UK";
+  "Find live professional trainings across Pakistan, the Gulf, Europe, Asia, and North America";
 export const SITE_DESCRIPTION =
-  "Search upcoming instructor-led trainings across Pakistan, the UAE, the United States, and the United Kingdom. Discover live classroom, hybrid, and online sessions — then register on the provider's official page.";
+  "Search upcoming instructor-led trainings across Pakistan, the UAE, Saudi Arabia, Bahrain, Qatar, Oman, USA, UK, Europe, Canada, Japan, Malaysia, and Singapore. Discover live classroom, hybrid, and online sessions — then register on the provider's official page.";
 export const DEFAULT_COUNTRY = "PK";
 export const DEFAULT_CURRENCY = "PKR";
 
 export const SUPPORTED_COUNTRIES = [
   { code: "PK", label: "Pakistan" },
   { code: "AE", label: "United Arab Emirates" },
+  { code: "SA", label: "Saudi Arabia" },
+  { code: "BH", label: "Bahrain" },
+  { code: "QA", label: "Qatar" },
+  { code: "OM", label: "Oman" },
   { code: "US", label: "United States" },
   { code: "GB", label: "United Kingdom" },
+  { code: "DE", label: "Germany" },
+  { code: "FR", label: "France" },
+  { code: "CZ", label: "Czech Republic" },
+  { code: "NL", label: "Netherlands" },
+  { code: "CA", label: "Canada" },
+  { code: "JP", label: "Japan" },
+  { code: "MY", label: "Malaysia" },
+  { code: "SG", label: "Singapore" },
 ] as const;
 
 export const POPULAR_CATEGORIES = [
@@ -90,6 +102,18 @@ export const CITIES_BY_COUNTRY: Record<string, readonly string[]> = {
     "Oxford",
     "Liverpool",
   ],
+  SA: ["Riyadh", "Jeddah", "Dammam", "Khobar"],
+  BH: ["Manama"],
+  QA: ["Doha"],
+  OM: ["Muscat"],
+  DE: ["Berlin", "Munich", "Frankfurt", "Hamburg"],
+  FR: ["Paris", "Lyon", "Marseille"],
+  CZ: ["Prague", "Brno"],
+  NL: ["Amsterdam", "Rotterdam", "The Hague"],
+  CA: ["Toronto", "Vancouver", "Montreal", "Ottawa", "Calgary", "Markham"],
+  JP: ["Tokyo", "Osaka", "Yokohama"],
+  MY: ["Kuala Lumpur", "Petaling Jaya", "Penang"],
+  SG: ["Singapore"],
 };
 
 /** Flat city list for filters (all supported countries). */
@@ -112,6 +136,28 @@ export function currencyForCountryCode(countryCode?: string | null): string {
       return "GBP";
     case "PK":
       return "PKR";
+    case "SA":
+      return "SAR";
+    case "BH":
+      return "BHD";
+    case "QA":
+      return "QAR";
+    case "OM":
+      return "OMR";
+    case "DE":
+    case "FR":
+    case "NL":
+      return "EUR";
+    case "CZ":
+      return "CZK";
+    case "CA":
+      return "CAD";
+    case "JP":
+      return "JPY";
+    case "MY":
+      return "MYR";
+    case "SG":
+      return "SGD";
     default:
       return DEFAULT_CURRENCY;
   }

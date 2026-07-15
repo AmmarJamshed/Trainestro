@@ -1,0 +1,14 @@
+name: "Eventbrite: Singapore"
+
+on:
+  schedule:
+    - cron: "40 7 * * 1"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/trainings-eventbrite-reusable.yml
+    with:
+      scraper_key: eventbrite-sg
+      country_label: Singapore
+    secrets: inherit

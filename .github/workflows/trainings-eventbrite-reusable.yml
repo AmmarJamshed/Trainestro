@@ -1,0 +1,90 @@
+name: Eventbrite scrape (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      scraper_key:
+        description: Eventbrite scraper key (e.g. eventbrite-sg)
+        required: true
+        type: string
+      country_label:
+        description: Human-readable country name for commit message
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      scraper_key:
+        description: Eventbrite scraper key
+        required: true
+        type: choice
+        options:
+          - eventbrite-sa
+          - eventbrite-bh
+          - eventbrite-qa
+          - eventbrite-om
+          - eventbrite-de
+          - eventbrite-fr
+          - eventbrite-cz
+          - eventbrite-nl
+          - eventbrite-ca
+          - eventbrite-jp
+          - eventbrite-my
+          - eventbrite-sg
+      country_label:
+        description: Country label
+        required: true
+        type: string
+        default: Country
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Scrape Eventbrite country
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SCRAPER_KEY: ${{ inputs.scraper_key }}
+        run: npx tsx scripts/scrape-one.ts "$SCRAPER_KEY"
+
+      - name: Commit updated data files
+        env:
+          COUNTRY: ${{ inputs.country_label }}
+        run: |
+          git config user.name "trainestro-bot"
+          git config user.email "bot@trainestro.local"
+          git pull --rebase origin HEAD || true
+          git add data || true
+          if git diff --staged --quiet; then
+            echo "No data changes for $COUNTRY"
+          else
+            git commit -m "chore: weekly Eventbrite refresh ($COUNTRY)"
+            git push
+          fi
+
+      - name: Trigger Vercel redeploy
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$VERCEL_DEPLOY_HOOK_URL" ]; then
+            curl -fsS -X POST "$VERCEL_DEPLOY_HOOK_URL"
+          else
+            echo "VERCEL_DEPLOY_HOOK_URL not set — skipping redeploy hook"
+          fi

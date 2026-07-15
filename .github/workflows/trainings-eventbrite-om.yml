@@ -1,0 +1,14 @@
+name: "Eventbrite: Oman"
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/trainings-eventbrite-reusable.yml
+    with:
+      scraper_key: eventbrite-om
+      country_label: Oman
+    secrets: inherit

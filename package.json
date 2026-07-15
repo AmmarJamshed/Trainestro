@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "scrape": "tsx scripts/scrape.ts",
+    "scrape:one": "tsx scripts/scrape-one.ts",
     "cleanup:expired": "tsx scripts/cleanup-expired.ts",
     "typecheck": "tsc --noEmit"
   },

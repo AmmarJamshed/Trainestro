@@ -1,6 +1,6 @@
 # Trainestro
 
-Live professional training aggregator for **Pakistan, UAE, USA, and UK**. Discover upcoming instructor-led sessions (classroom, hybrid, live online) and register on the provider's official page.
+Live professional training aggregator for **Pakistan, UAE, Saudi Arabia, Bahrain, Qatar, Oman, USA, UK, Germany, France, Czech Republic, Netherlands, Canada, Japan, Malaysia, and Singapore**. Discover upcoming instructor-led sessions (classroom, hybrid, live online) and register on the provider's official page.
 
 ## Stack
 
@@ -29,6 +29,7 @@ Admin panel: `/admin` (default password `trainestro-admin` — change via `ADMIN
 | `npm run dev` | Start Next.js |
 | `npm run build` | Production build |
 | `npm run scrape` | Run all provider scrapers (upsert new/updated trainings) |
+| `npm run scrape:one -- eventbrite-sg` | Run one scraper key (used by per-country Actions) |
 | `npm run cleanup:expired` | Delete trainings whose completion date is today or earlier |
 | `npm run lint` | ESLint |
 
@@ -50,7 +51,9 @@ Each scraper lives under `src/lib/scrapers/providers/` and is registered in `src
 
 ## Countries
 
-Supported country filters: `PK`, `AE`, `US`, `GB`. Trainings store an event-level `country_code` (GDG events use the chapter country even when the provider row is multi-region).
+Supported country filters: `PK`, `AE`, `SA`, `BH`, `QA`, `OM`, `US`, `GB`, `DE`, `FR`, `CZ`, `NL`, `CA`, `JP`, `MY`, `SG`.
+
+Eventbrite markets use **one provider/scraper key per country** (`eventbrite-sa` … `eventbrite-sg`) so weekly jobs can run sequentially without pruning other countries.
 
 ## Supabase
 
@@ -63,7 +66,9 @@ Supported country filters: `PK`, `AE`, `US`, `GB`. Trainings store an event-leve
 
 | Workflow | Schedule | Purpose |
 | --- | --- | --- |
-| `.github/workflows/weekly-scrape.yml` | Mondays 03:00 UTC (45 min timeout) | Scrape all providers including multi-country GDG cities |
+| `.github/workflows/weekly-scrape.yml` | Mondays 03:00 UTC (45 min timeout) | Scrape core providers including multi-country GDG cities |
+| `.github/workflows/trainings-eventbrite-*.yml` | Mondays 04:00–07:40 UTC (20 min apart) | One Eventbrite country per Action |
+| `.github/workflows/weekly-eventbrite-all.yml` | Manual | Run all Eventbrite countries sequentially |
 | `.github/workflows/monthly-cleanup.yml` | 1st of month 04:00 UTC | Delete trainings past completion (`end_date`, or `start_date` if no end) — all countries |
 
 Both support **Run workflow** manually from the Actions tab.
